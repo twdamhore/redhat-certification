@@ -19,10 +19,28 @@ Practice environment for RHCSA exam prep on RHEL 10 / AlmaLinux 10.1. Tasks are 
 
 ```
 rhcsa/2026/objective-01/
-├── prepare.sh      # Sets up /exam/objective1/ (idempotent - rerun to reset)
+├── prepare.sh      # Sets up ~/rhcsa-lab/objective-01/ (idempotent - rerun to reset)
 ├── score.sh        # Shows tasks + PASS/NOT COMPLETE (no validation hints)
 ├── prompts.txt     # All Claude Code prompts
 └── CONTEXT.md      # This file
+```
+
+## Exam Directory Structure
+
+```
+~/rhcsa-lab/objective-01/
+├── 01_shell/       # Sub-obj 1: Shell Commands
+├── 02_redirection/ # Sub-obj 2: I/O Redirection
+├── 03_grep/        # Sub-obj 3: grep/Regex
+├── 04_ssh/         # Sub-obj 4: SSH (mostly uses ~/.ssh/)
+├── 05_users/       # Sub-obj 5: Users
+├── 06_archive/     # Sub-obj 6: Archive
+├── 07_textfiles/   # Sub-obj 7: Text Files
+├── 08_files/       # Sub-obj 8: File Operations
+├── 09_links/       # Sub-obj 9: Links
+├── 10_permissions/ # Sub-obj 10: Permissions
+├── 11_docs/        # Sub-obj 11: Documentation
+└── TASKS.txt       # Task descriptions
 ```
 
 ## Objective 1: Understand and Use Essential Tools
@@ -87,7 +105,7 @@ rhcsa/2026/objective-01/
 git clone https://github.com/twdamhore/redhat-certification.git
 cd redhat-certification/rhcsa/2026/objective-01
 sudo ./prepare.sh    # Setup (rerun to reset)
-cat /exam/objective1/TASKS.txt
+cat ~/rhcsa-lab/objective-01/TASKS.txt
 sudo ./score.sh      # Check progress
 ```
 

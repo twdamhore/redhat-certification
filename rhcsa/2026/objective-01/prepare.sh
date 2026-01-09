@@ -7,7 +7,7 @@
 # Difficulty: RHCSA + 20%
 # Target: AlmaLinux 10.1 / RHEL 10
 #
-# Run as root: sudo ./prepare.sh
+# Run as: sudo ./prepare.sh
 #
 
 set -e
@@ -19,8 +19,28 @@ BLUE='\033[0;34m'
 CYAN='\033[0;36m'
 NC='\033[0m'
 
+# Detect real user (even when running with sudo)
+if [[ -n "$SUDO_USER" ]] && [[ "$SUDO_USER" != "root" ]]; then
+    REAL_USER="$SUDO_USER"
+elif [[ $(logname 2>/dev/null) ]] && [[ $(logname) != "root" ]]; then
+    REAL_USER=$(logname)
+elif [[ -n "$USER" ]] && [[ "$USER" != "root" ]]; then
+    REAL_USER="$USER"
+else
+    echo -e "${RED}Error: Cannot detect non-root user.${NC}"
+    echo -e "${RED}Please run as: sudo ./prepare.sh (from a non-root login)${NC}"
+    exit 1
+fi
+
+REAL_USER_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+
+if [[ -z "$REAL_USER_HOME" ]] || [[ ! -d "$REAL_USER_HOME" ]]; then
+    echo -e "${RED}Error: Cannot find home directory for user '$REAL_USER'${NC}"
+    exit 1
+fi
+
 if [[ $EUID -ne 0 ]]; then
-   echo -e "${RED}This script must be run as root${NC}"
+   echo -e "${RED}This script must be run with sudo${NC}"
    exit 1
 fi
 
@@ -29,8 +49,11 @@ echo -e "${BLUE}  RHCSA Objective 1: Essential Tools${NC}"
 echo -e "${BLUE}  Preparation Script${NC}"
 echo -e "${BLUE}============================================${NC}"
 echo ""
+echo -e "${CYAN}Detected user: $REAL_USER${NC}"
+echo -e "${CYAN}Home directory: $REAL_USER_HOME${NC}"
+echo ""
 
-EXAM_DIR="/exam/objective1"
+EXAM_DIR="$REAL_USER_HOME/rhcsa-lab/objective-01"
 rm -rf "$EXAM_DIR" 2>/dev/null || true
 mkdir -p "$EXAM_DIR"
 
@@ -61,8 +84,8 @@ rm -rf /home/examuser/.ssh 2>/dev/null || true
 # ============================================
 echo -e "${YELLOW}[1/11] Setting up shell command tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/1_shell"
-cd "$EXAM_DIR/1_shell"
+mkdir -p "$EXAM_DIR/01_shell"
+cd "$EXAM_DIR/01_shell"
 
 mkdir -p data
 echo "server1.example.com" > data/server1.txt
@@ -80,8 +103,8 @@ echo "DB_NAME=production" >> config/database.conf
 # ============================================
 echo -e "${YELLOW}[2/11] Setting up I/O redirection tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/2_redirection"
-cd "$EXAM_DIR/2_redirection"
+mkdir -p "$EXAM_DIR/02_redirection"
+cd "$EXAM_DIR/02_redirection"
 
 cat > generate_report.sh << 'SCRIPT'
 #!/bin/bash
@@ -125,8 +148,8 @@ EOF
 # ============================================
 echo -e "${YELLOW}[3/11] Setting up grep/regex tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/3_grep"
-cd "$EXAM_DIR/3_grep"
+mkdir -p "$EXAM_DIR/03_grep"
+cd "$EXAM_DIR/03_grep"
 
 cat > users.txt << 'EOF'
 jsmith:x:1001:1001:John Smith:/home/jsmith:/bin/bash
@@ -197,15 +220,15 @@ EOF
 # ============================================
 echo -e "${YELLOW}[4/11] Setting up SSH tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/4_ssh"
+mkdir -p "$EXAM_DIR/04_ssh"
 
 # ============================================
 # SUB-OBJECTIVE 5: Users and Multiuser (4 tasks)
 # ============================================
 echo -e "${YELLOW}[5/11] Setting up user switching tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/5_users"
-cd "$EXAM_DIR/5_users"
+mkdir -p "$EXAM_DIR/05_users"
+cd "$EXAM_DIR/05_users"
 
 echo "Confidential data" > confidential.txt
 chmod 600 confidential.txt
@@ -223,8 +246,8 @@ chmod 755 reports
 # ============================================
 echo -e "${YELLOW}[6/11] Setting up archive tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/6_archive"
-cd "$EXAM_DIR/6_archive"
+mkdir -p "$EXAM_DIR/06_archive"
+cd "$EXAM_DIR/06_archive"
 
 mkdir -p webapp/{src,config,logs,tmp,public}
 echo "#!/usr/bin/env python3" > webapp/src/main.py
@@ -255,8 +278,8 @@ rm -rf backup_data
 # ============================================
 echo -e "${YELLOW}[7/11] Setting up text editing tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/7_textfiles"
-cd "$EXAM_DIR/7_textfiles"
+mkdir -p "$EXAM_DIR/07_textfiles"
+cd "$EXAM_DIR/07_textfiles"
 
 cat > hosts.local << 'EOF'
 # Local host entries
@@ -305,8 +328,8 @@ EOF
 # ============================================
 echo -e "${YELLOW}[8/11] Setting up file operation tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/8_files"
-cd "$EXAM_DIR/8_files"
+mkdir -p "$EXAM_DIR/08_files"
+cd "$EXAM_DIR/08_files"
 
 mkdir -p source/{documents,images,videos,misc,temp}
 echo "Report Q1 2025" > "source/documents/report_q1.txt"
@@ -332,8 +355,8 @@ touch source/documents/.secret_notes
 # ============================================
 echo -e "${YELLOW}[9/11] Setting up link tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/9_links"
-cd "$EXAM_DIR/9_links"
+mkdir -p "$EXAM_DIR/09_links"
+cd "$EXAM_DIR/09_links"
 
 mkdir -p original
 echo "Configuration file v1.0" > original/app.conf
@@ -389,13 +412,13 @@ Time Suggested: 120 minutes
 Pass Score: 70/100 points
 
 IMPORTANT:
-- Complete tasks in the directories under /exam/objective1/
-- Run 'score.sh' to check your progress
+- Complete tasks in the directories under ~/rhcsa-lab/objective-01/
+- Run 'sudo ./score.sh' to check your progress
 - The scoring verifies RESULTS, not methods - but practice the specified methods
 
 ================================================================================
 SUB-OBJECTIVE 1: ACCESS SHELL AND ISSUE COMMANDS
-Directory: /exam/objective1/1_shell/
+Directory: ~/rhcsa-lab/objective-01/01_shell/
 ================================================================================
 
 Task 1.1 (3 pts)
@@ -413,7 +436,7 @@ not the variable name), save to 'dbname.txt'
 
 ================================================================================
 SUB-OBJECTIVE 2: INPUT-OUTPUT REDIRECTION
-Directory: /exam/objective1/2_redirection/
+Directory: ~/rhcsa-lab/objective-01/02_redirection/
 ================================================================================
 
 Task 2.1 (2 pts)
@@ -435,7 +458,7 @@ then append current date (just the date) on a new line
 
 ================================================================================
 SUB-OBJECTIVE 3: GREP AND REGULAR EXPRESSIONS
-Directory: /exam/objective1/3_grep/
+Directory: ~/rhcsa-lab/objective-01/03_grep/
 ================================================================================
 
 Task 3.1 (2 pts)
@@ -462,7 +485,7 @@ Extract all valid email addresses from 'emails.txt' to 'valid_emails.txt'
 
 ================================================================================
 SUB-OBJECTIVE 4: ACCESS REMOTE SYSTEMS USING SSH
-Directory: /home/examuser/.ssh/
+Directory: ~/.ssh/ (as examuser)
 ================================================================================
 
 Task 4.1 (3 pts)
@@ -477,7 +500,7 @@ Set correct SSH permissions: directory 700, private key 600, public key 644, con
 
 ================================================================================
 SUB-OBJECTIVE 5: LOG IN AND SWITCH USERS
-Directory: /exam/objective1/5_users/
+Directory: ~/rhcsa-lab/objective-01/05_users/
 ================================================================================
 
 Task 5.1 (2 pts)
@@ -497,7 +520,7 @@ then run 'id' and append to same file
 
 ================================================================================
 SUB-OBJECTIVE 6: ARCHIVE, COMPRESS, UNPACK FILES
-Directory: /exam/objective1/6_archive/
+Directory: ~/rhcsa-lab/objective-01/06_archive/
 ================================================================================
 
 Task 6.1 (2 pts)
@@ -517,7 +540,7 @@ Create 'webapp_config.tar.xz' containing only webapp/config/ directory
 
 ================================================================================
 SUB-OBJECTIVE 7: CREATE AND EDIT TEXT FILES
-Directory: /exam/objective1/7_textfiles/
+Directory: ~/rhcsa-lab/objective-01/07_textfiles/
 ================================================================================
 
 Task 7.1 (2 pts)
@@ -540,7 +563,7 @@ and PasswordAuthentication from yes to no
 
 ================================================================================
 SUB-OBJECTIVE 8: FILE AND DIRECTORY OPERATIONS
-Directory: /exam/objective1/8_files/
+Directory: ~/rhcsa-lab/objective-01/08_files/
 ================================================================================
 
 Task 8.1 (2 pts)
@@ -562,7 +585,7 @@ to 'hidden_backup/'
 
 ================================================================================
 SUB-OBJECTIVE 9: CREATE HARD AND SOFT LINKS
-Directory: /exam/objective1/9_links/
+Directory: ~/rhcsa-lab/objective-01/09_links/
 ================================================================================
 
 Task 9.1 (2 pts)
@@ -582,7 +605,7 @@ In 'links/', create SYMBOLIC link 'libcustom.so' pointing to 'lib'
 
 ================================================================================
 SUB-OBJECTIVE 10: PERMISSIONS
-Directory: /exam/objective1/10_permissions/
+Directory: ~/rhcsa-lab/objective-01/10_permissions/
 ================================================================================
 
 Task 10.1 (2 pts)
@@ -602,7 +625,7 @@ Set project/config/credentials.conf: owner=root, group=root, mode=600
 
 ================================================================================
 SUB-OBJECTIVE 11: SYSTEM DOCUMENTATION
-Directory: /exam/objective1/11_docs/answers/
+Directory: ~/rhcsa-lab/objective-01/11_docs/answers/
 ================================================================================
 
 Task 11.1 (2 pts)
@@ -633,12 +656,18 @@ examuser ALL=(ALL) NOPASSWD: ALL
 EOF
 chmod 440 /etc/sudoers.d/examuser
 
-# Set permissions
-chown -R root:root "$EXAM_DIR"
+# Set ownership to real user (not root)
+chown -R "$REAL_USER:$REAL_USER" "$EXAM_DIR"
 chmod -R 755 "$EXAM_DIR"
-chmod 770 "$EXAM_DIR/5_users/shared_workspace"
-chown root:developers "$EXAM_DIR/5_users/shared_workspace"
-chmod 755 "$EXAM_DIR/5_users/reports"
+
+# Special permissions for specific tasks
+chmod 770 "$EXAM_DIR/05_users/shared_workspace"
+chown root:developers "$EXAM_DIR/05_users/shared_workspace"
+chmod 755 "$EXAM_DIR/05_users/reports"
+chown "$REAL_USER:$REAL_USER" "$EXAM_DIR/05_users/reports"
+
+# Make sure examuser is also REAL_USER for SSH tasks (or use REAL_USER)
+# Update: We'll use REAL_USER for SSH tasks instead of examuser
 
 echo ""
 echo -e "${GREEN}============================================${NC}"
@@ -646,13 +675,15 @@ echo -e "${GREEN}  Environment setup complete!${NC}"
 echo -e "${GREEN}============================================${NC}"
 echo ""
 echo -e "Exam directory: ${BLUE}$EXAM_DIR${NC}"
+echo -e "  (also: ${BLUE}~/rhcsa-lab/objective-01/${NC})"
+echo ""
 echo -e "Read tasks:     ${BLUE}cat $EXAM_DIR/TASKS.txt${NC}"
 echo -e "Check score:    ${BLUE}sudo ./score.sh${NC}"
 echo ""
-echo -e "${CYAN}Users created:${NC}"
+echo -e "${CYAN}Practice user: $REAL_USER${NC}"
+echo -e "${CYAN}Helper users created:${NC}"
 echo -e "  examuser (password: exam123) - groups: examgroup, developers"
 echo -e "  testuser (password: test123) - groups: operators"
-echo -e "  admin    (password: admin123)"
 echo ""
 echo -e "${YELLOW}Good luck!${NC}"
 echo ""

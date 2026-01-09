@@ -16,12 +16,32 @@ CYAN='\033[0;36m'
 WHITE='\033[1;37m'
 NC='\033[0m'
 
-EXAM_DIR="/exam/objective1"
+# Detect real user (even when running with sudo)
+if [[ -n "$SUDO_USER" ]] && [[ "$SUDO_USER" != "root" ]]; then
+    REAL_USER="$SUDO_USER"
+elif [[ $(logname 2>/dev/null) ]] && [[ $(logname) != "root" ]]; then
+    REAL_USER=$(logname)
+elif [[ -n "$USER" ]] && [[ "$USER" != "root" ]]; then
+    REAL_USER="$USER"
+else
+    echo -e "${RED}Error: Cannot detect non-root user.${NC}"
+    echo -e "${RED}Please run as: sudo ./score.sh (from a non-root login)${NC}"
+    exit 1
+fi
+
+REAL_USER_HOME=$(getent passwd "$REAL_USER" | cut -d: -f6)
+
+if [[ -z "$REAL_USER_HOME" ]] || [[ ! -d "$REAL_USER_HOME" ]]; then
+    echo -e "${RED}Error: Cannot find home directory for user '$REAL_USER'${NC}"
+    exit 1
+fi
+
+EXAM_DIR="$REAL_USER_HOME/rhcsa-lab/objective-01"
 TOTAL_POINTS=0
 MAX_POINTS=100
 
 if [[ $EUID -ne 0 ]]; then
-   echo -e "${RED}This script must be run as root${NC}"
+   echo -e "${RED}This script must be run with sudo${NC}"
    exit 1
 fi
 
@@ -59,7 +79,7 @@ fail_task() {
 # ============================================
 echo -e "${CYAN}=== Sub-objective 1: Shell Commands ===${NC}"
 echo ""
-cd "$EXAM_DIR/1_shell" 2>/dev/null
+cd "$EXAM_DIR/01_shell" 2>/dev/null
 
 show_task "1.1" "3" "Create files file_a.txt, file_b.txt, file_c.txt"
 if [[ -f "file_a.txt" ]] && [[ -f "file_b.txt" ]] && [[ -f "file_c.txt" ]]; then
@@ -111,7 +131,7 @@ fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 2: I/O Redirection ===${NC}"
 echo ""
-cd "$EXAM_DIR/2_redirection" 2>/dev/null
+cd "$EXAM_DIR/02_redirection" 2>/dev/null
 
 show_task "2.1" "2" "Run './generate_report.sh' redirecting ONLY stderr to 'errors.log'"
 if [[ -f "errors.log" ]]; then
@@ -180,7 +200,7 @@ fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 3: grep and Regular Expressions ===${NC}"
 echo ""
-cd "$EXAM_DIR/3_grep" 2>/dev/null
+cd "$EXAM_DIR/03_grep" 2>/dev/null
 
 show_task "3.1" "2" "Extract usernames of /bin/bash users from users.txt to 'bash_users.txt'"
 if [[ -f "bash_users.txt" ]]; then
@@ -301,7 +321,7 @@ if $perms_ok; then pass_task 3; else fail_task; fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 5: Users ===${NC}"
 echo ""
-cd "$EXAM_DIR/5_users" 2>/dev/null
+cd "$EXAM_DIR/05_users" 2>/dev/null
 
 show_task "5.1" "2" "As examuser, create 'examuser_was_here.txt' with 'Created by examuser'"
 if [[ -f "examuser_was_here.txt" ]]; then
@@ -360,7 +380,7 @@ fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 6: Archive ===${NC}"
 echo ""
-cd "$EXAM_DIR/6_archive" 2>/dev/null
+cd "$EXAM_DIR/06_archive" 2>/dev/null
 
 show_task "6.1" "2" "Create webapp_src.tar.gz with ONLY webapp/src and webapp/public"
 if [[ -f "webapp_src.tar.gz" ]]; then
@@ -428,7 +448,7 @@ fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 7: Text Files ===${NC}"
 echo ""
-cd "$EXAM_DIR/7_textfiles" 2>/dev/null
+cd "$EXAM_DIR/07_textfiles" 2>/dev/null
 
 show_task "7.1" "2" "Create server_info.txt with hostname, IP, gateway, DNS"
 if [[ -f "server_info.txt" ]]; then
@@ -481,7 +501,7 @@ fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 8: File Operations ===${NC}"
 echo ""
-cd "$EXAM_DIR/8_files" 2>/dev/null
+cd "$EXAM_DIR/08_files" 2>/dev/null
 
 show_task "8.1" "2" "Copy .txt files from source/documents/ to backup/docs/"
 if [[ -d "backup/docs" ]]; then
@@ -543,7 +563,7 @@ fi
 # ============================================
 echo -e "${CYAN}=== Sub-objective 9: Links ===${NC}"
 echo ""
-cd "$EXAM_DIR/9_links" 2>/dev/null
+cd "$EXAM_DIR/09_links" 2>/dev/null
 
 show_task "9.1" "2" "Create HARD link links/app.conf.bak to original/app.conf"
 if [[ -f "links/app.conf.bak" ]]; then

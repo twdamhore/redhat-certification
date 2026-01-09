@@ -125,3 +125,36 @@ Added new task types: xz compression, symlink chains, recursive permissions,
 apropos usage, hidden files, archive listing, config file edits, etc.
 
 ================================================================================
+PROMPT 7 - Directory Path Changes (2026-01-09)
+================================================================================
+
+can we create relative to $HOME and owned by the current user? can we figure
+who is the user even if we use sudo? and complain if it there is no logged in
+non-root user?
+
+also the sub objective should also be 01..09..10..11
+
+and make it objective-01
+
+---
+RESULT: Updated both prepare.sh and score.sh:
+
+1. User detection - detects real user even with sudo:
+   - Checks $SUDO_USER first (most reliable with sudo)
+   - Falls back to logname
+   - Falls back to $USER
+   - Fails with error if no non-root user detected
+
+2. Directory structure changed:
+   - Old: /exam/objective1/{1_shell,2_redirection,...}
+   - New: ~/rhcsa-lab/objective-01/{01_shell,02_redirection,...}
+
+3. Sub-objective directories now use two-digit format:
+   01_shell, 02_redirection, 03_grep, 04_ssh, 05_users, 06_archive,
+   07_textfiles, 08_files, 09_links, 10_permissions, 11_docs
+
+4. Ownership: Exam directory owned by detected user (not root)
+
+5. Updated TASKS.txt paths to use ~/rhcsa-lab/objective-01/
+
+================================================================================
