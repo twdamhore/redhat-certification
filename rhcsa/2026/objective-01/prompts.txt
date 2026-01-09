@@ -1,0 +1,47 @@
+# Claude Code Prompts Log for RHCSA Objective 1
+# This file tracks all prompts used during development
+
+================================================================================
+PROMPT 1 - Initial Request (2026-01-09)
+================================================================================
+
+so i have a github repository here, there is an empty direcrtry rhcsa/2026/objective-01. i want you to create 2 shell script there, one called prepare.sh and one called score.sh. for rhcsa on rhel 10, look at the objectives and make it like the actual rhcsa where some tasks need to be completed, make a few tasks for each sub objective and make it a little harder than what redhat wants, also, save a file called prompts.txt and keep track of all the claude code prompts in that file, keep appending, including this one. make the tasks 20% harder than required. also, my vm is on almalinux 10.1 and i have a 20GiB disk that is that has some space not allocated to any partitions. currently i have one vm. for objective 1, i don't think we need multiple VMs. so go ahead and create the 3 files. please ask me if you are unsure of anything. also, this is not a production machine, don't worry about crashing it or doing damage. I can just reinstall it, no biggie.
+
+---
+RESULT: Created prepare.sh, score.sh, and prompts.txt for RHCSA Objective 1
+(Understand and Use Essential Tools) with tasks 20% harder than standard RHCSA.
+
+Tasks include:
+- I/O Redirection (advanced stderr/stdout separation)
+- grep and Regular Expressions (extended regex patterns)
+- SSH Configuration (Ed25519 keys, custom config)
+- Archive and Compression (multiple formats, exclusions, xz)
+- File Operations (complex structures, renaming, hidden files)
+- Hard and Soft Links (both relative and absolute paths required)
+- Permissions (SETUID, SETGID, STICKY BIT - beyond standard RHCSA)
+- System Documentation (man pages research)
+- Text Editing (create and modify files)
+
+================================================================================
+PROMPT 2 - Context File Request (2026-01-09)
+================================================================================
+
+can you also keep a file for context, so that you can quicky pickup where you left of? does it work that way?
+
+---
+RESULT: Created CONTEXT.md with project overview, environment details, current
+status, and instructions. Claude can read this at session start to resume work.
+
+================================================================================
+PROMPT 3 - Objective Count Correction (2026-01-09)
+================================================================================
+
+can you double check? https://www.redhat.com/en/services/training/ex200-red-hat-certified-system-administrator-rhcsa-exam i counted 10, but CONTEXT.md list 8 for "RHCSA RHEL 10 Objectives (Full List)"?
+
+---
+RESULT: User was correct. Fixed CONTEXT.md - there are 10 objectives, not 8.
+Missing objectives were:
+- Objective 2: Manage software (RPM repositories, Flatpak)
+- Objective 3: Create simple shell scripts
+
+================================================================================
