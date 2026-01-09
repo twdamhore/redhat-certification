@@ -77,3 +77,25 @@ score.sh:
 - 100 points total, 70 to pass
 
 ================================================================================
+PROMPT 5 - Show Questions in Scoring (2026-01-09)
+================================================================================
+
+i want, when i run score.sh, even tho it does not show what is being checked, it gives me the question on what to do. so no hints on the answer but i do need the question so i know what to do. like with normal RHCSA.
+
+---
+RESULT: Updated score.sh to show task questions (what to do) like real RHCSA exam.
+
+Output format now:
+```
+Task 1.1: Using a SINGLE command with brace expansion, create files: file_a.txt, file_b.txt, file_c.txt
+         [PASS]
+
+Task 1.2: Create 'hostname.txt' containing ONLY the system's hostname using command substitution
+         [NOT COMPLETE]
+```
+
+- Shows the question/task description
+- Shows PASS or NOT COMPLETE
+- No hints about how it's being validated
+
+================================================================================
