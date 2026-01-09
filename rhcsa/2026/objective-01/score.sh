@@ -293,7 +293,7 @@ else
     fail_task
 fi
 
-show_task "4.2" "3" "Create ~/.ssh/config with Host 'lab' pointing to 127.0.0.1"
+show_task "4.2" "3" "As examuser, create ~/.ssh/config with Host 'lab' pointing to 127.0.0.1"
 if [[ -f "$EXAMUSER_HOME/.ssh/config" ]]; then
     if grep -qi "Host lab" "$EXAMUSER_HOME/.ssh/config" && grep -q "127.0.0.1\|localhost" "$EXAMUSER_HOME/.ssh/config"; then
         pass_task 3
@@ -304,7 +304,7 @@ else
     fail_task
 fi
 
-show_task "4.3" "3" "Set SSH permissions: dir=700, private=600, public=644, config=600"
+show_task "4.3" "3" "As examuser, set ~/.ssh/ permissions: dir=700, private=600, public=644, config=600"
 perms_ok=true
 if [[ -d "$EXAMUSER_HOME/.ssh" ]]; then
     [[ "$(stat -c %a "$EXAMUSER_HOME/.ssh")" == "700" ]] || perms_ok=false
