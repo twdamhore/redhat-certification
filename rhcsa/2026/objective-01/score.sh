@@ -250,7 +250,7 @@ else
     fail_task
 fi
 
-show_task "3.5" "2" "Find users with UID>=1000 AND /bin/bash to 'regular_bash_users.txt'"
+show_task "3.5" "2" "From 'users.txt', find users with UID>=1000 AND /bin/bash to 'regular_bash_users.txt'"
 if [[ -f "regular_bash_users.txt" ]]; then
     count=$(wc -l < regular_bash_users.txt | tr -d '[:space:]')
     if [[ $count -ge 4 ]] && grep -q "jsmith" regular_bash_users.txt; then
