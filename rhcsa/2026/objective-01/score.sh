@@ -282,7 +282,7 @@ echo ""
 
 EXAMUSER_HOME=$(getent passwd examuser | cut -d: -f6)
 
-show_task "4.1" "3" "Generate Ed25519 SSH key for examuser with comment 'examuser@rhcsa-lab'"
+show_task "4.1" "3" "As examuser, generate Ed25519 SSH key (~/.ssh/id_ed25519) with comment 'examuser@rhcsa-lab'"
 if [[ -f "$EXAMUSER_HOME/.ssh/id_ed25519" ]] && [[ -f "$EXAMUSER_HOME/.ssh/id_ed25519.pub" ]]; then
     if grep -q "examuser@rhcsa-lab" "$EXAMUSER_HOME/.ssh/id_ed25519.pub"; then
         pass_task 3
