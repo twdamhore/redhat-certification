@@ -323,7 +323,7 @@ echo -e "${CYAN}=== Sub-objective 5: Users ===${NC}"
 echo ""
 cd "$EXAM_DIR/05_users" 2>/dev/null
 
-show_task "5.1" "2" "As examuser, create 'examuser_was_here.txt' with 'Created by examuser'"
+show_task "5.1" "2" "As examuser, create '05_users/examuser_was_here.txt' containing 'Created by examuser'"
 if [[ -f "examuser_was_here.txt" ]]; then
     owner=$(stat -c %U examuser_was_here.txt)
     if [[ "$owner" == "examuser" ]] && grep -q "Created by examuser" examuser_was_here.txt; then
@@ -335,7 +335,7 @@ else
     fail_task
 fi
 
-show_task "5.2" "3" "As examuser with sudo, create 'sudo_test.txt' owned by root"
+show_task "5.2" "3" "As examuser with sudo, create '05_users/sudo_test.txt' owned by root containing 'Created with sudo'"
 if [[ -f "sudo_test.txt" ]]; then
     owner=$(stat -c %U sudo_test.txt)
     if [[ "$owner" == "root" ]] && grep -q "Created with sudo" sudo_test.txt; then
@@ -347,7 +347,7 @@ else
     fail_task
 fi
 
-show_task "5.3" "2" "Create shared_workspace/team_file.txt owned by examuser:developers"
+show_task "5.3" "2" "As examuser, create '05_users/shared_workspace/team_file.txt' owned by examuser:developers containing 'Team collaboration file'"
 if [[ -f "shared_workspace/team_file.txt" ]]; then
     owner=$(stat -c %U shared_workspace/team_file.txt)
     group=$(stat -c %G shared_workspace/team_file.txt)
@@ -364,7 +364,7 @@ else
     fail_task
 fi
 
-show_task "5.4" "3" "Save 'whoami' and 'id' output to reports/current_user.txt"
+show_task "5.4" "3" "As examuser, save 'whoami' and 'id' output to '05_users/reports/current_user.txt'"
 if [[ -f "reports/current_user.txt" ]]; then
     if grep -q "examuser" reports/current_user.txt && grep -q "uid=" reports/current_user.txt; then
         pass_task 3
