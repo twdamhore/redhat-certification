@@ -4,65 +4,67 @@
 
 ## Project Overview
 
-Practice environment for RHCSA (Red Hat Certified System Administrator) exam on RHEL 10 / AlmaLinux 10.1. Tasks are designed to be **20% harder** than actual exam requirements.
+Practice environment for RHCSA exam prep on RHEL 10 / AlmaLinux 10.1. Tasks are **20% harder** than standard RHCSA requirements. Scoring verifies **results only** (not methods) - like the real exam.
 
 ## Environment
 
 | Item | Details |
 |------|---------|
 | VM OS | AlmaLinux 10.1 |
-| Disk | 20 GiB (some unallocated space available) |
-| VMs | Single VM (no multi-VM setup needed for Objective 1) |
-| Production? | No - safe to experiment, can reinstall |
+| Disk | 20 GiB (some unallocated space) |
+| VMs | Single VM for Objective 1 |
+| Production? | No - safe to experiment |
 
 ## File Structure
 
 ```
 rhcsa/2026/objective-01/
-├── prepare.sh      # Run as root - sets up /exam/objective1/ with 33 tasks
-├── score.sh        # Run as root - validates tasks (70/100 to pass)
-├── prompts.txt     # Log of all Claude Code prompts
-└── CONTEXT.md      # This file - project context for Claude
+├── prepare.sh      # Sets up /exam/objective1/ (idempotent - rerun to reset)
+├── score.sh        # Shows tasks + PASS/NOT COMPLETE (no validation hints)
+├── prompts.txt     # All Claude Code prompts
+└── CONTEXT.md      # This file
 ```
 
 ## Objective 1: Understand and Use Essential Tools
 
-**33 Tasks Total** (3 tasks × 11 sub-objectives)
+**45 Tasks Total** (variable per sub-objective)
 
-| Sub-Obj | Topic | Points | Key Challenges |
-|---------|-------|--------|----------------|
-| 1 | Shell Commands | 9 | Brace expansion, command substitution |
-| 2 | I/O Redirection | 9 | stderr/stdout separation, pipelines |
-| 3 | grep/Regex | 9 | Extract usernames, IPs, HTTP errors |
-| 4 | SSH | 9 | Ed25519 keys, config file, permissions |
-| 5 | User Switching | 9 | su, sudo, file ownership |
-| 6 | Archive/Compression | 9 | tar.gz, tar.bz2, exclusions |
-| 7 | Text Files | 9 | Create, modify, append |
-| 8 | File Operations | 9 | Copy, move/rename, mkdir with brace |
-| 9 | Links | 9 | Hard links, relative/absolute symlinks |
-| 10 | Permissions | 10 | Standard perms, SETGID, STICKY bit |
-| 11 | Documentation | 10 | man pages research |
+| Sub-Obj | Topic | Tasks | Points |
+|---------|-------|-------|--------|
+| 1 | Shell Commands | 4 | 10 |
+| 2 | I/O Redirection | 5 | 11 |
+| 3 | grep/Regex | 6 | 13 |
+| 4 | SSH | 3 | 9 |
+| 5 | Users | 4 | 10 |
+| 6 | Archive | 5 | 11 |
+| 7 | Text Files | 4 | 9 |
+| 8 | File Operations | 5 | 11 |
+| 9 | Links | 4 | 9 |
+| 10 | Permissions | 5 | 11 |
+| 11 | Documentation | 4 | 9 |
 
-## Users/Groups Created by prepare.sh
+## Users/Groups
 
 - Users: `examuser` (exam123), `testuser` (test123), `admin` (admin123)
 - Groups: `examgroup`, `developers`, `operators`
+- examuser has full sudo access
 
 ## Scoring Behavior
 
-- **PASS**: Shows `[PASS] Task X.Y: what was verified`
-- **FAIL**: Shows `[    ] Task X.Y: Not complete` (no hints)
-- Pass threshold: 70/100 points
+- Shows task question (what to do)
+- Shows PASS or NOT COMPLETE
+- **No hints** about validation logic
+- Pass: 70/100 points
 
 ## Current Status
 
-- [x] Objective 1 scripts created (v2 - 33 tasks)
+- [x] Objective 1 complete (v3 - 45 tasks)
 - [ ] Objectives 2-10 (not started)
 
-## RHCSA RHEL 10 Objectives (Full List)
+## RHCSA RHEL 10 Objectives
 
 1. **Understand and use essential tools** ← DONE
-2. Manage software (RPM repositories, Flatpak)
+2. Manage software (RPM, Flatpak)
 3. Create simple shell scripts
 4. Operate running systems
 5. Configure local storage
@@ -74,21 +76,19 @@ rhcsa/2026/objective-01/
 
 ## Notes
 
+- Scoring checks RESULTS only, not methods (like real RHCSA)
+- Task descriptions guide practice but aren't enforced
 - Containers (Podman) removed from RHCSA 10
-- Flatpak added to RHCSA 10
-- 20 GiB disk has unallocated space for storage tasks (Objectives 5-6)
-- prepare.sh is idempotent - rerun to reset environment
+- 20 GiB disk has unallocated space for storage objectives
 
-## How to Use
+## Usage
 
 ```bash
-# On VM:
 git clone https://github.com/twdamhore/redhat-certification.git
 cd redhat-certification/rhcsa/2026/objective-01
-sudo ./prepare.sh    # Sets up environment (rerun to reset)
-cat /exam/objective1/TASKS.txt  # Read task instructions
-# complete tasks...
-sudo ./score.sh      # Check score
+sudo ./prepare.sh    # Setup (rerun to reset)
+cat /exam/objective1/TASKS.txt
+sudo ./score.sh      # Check progress
 ```
 
 ---

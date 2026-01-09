@@ -99,3 +99,29 @@ Task 1.2: Create 'hostname.txt' containing ONLY the system's hostname using comm
 - No hints about how it's being validated
 
 ================================================================================
+PROMPT 6 - Expand Tasks, Verify Logic (2026-01-09)
+================================================================================
+
+Task 1.1: Using a SINGLE command with brace expansion, create files: file_a.txt, file_b.txt, file_c.txt, how does it know if i created it manually or use brace expansion? it only checks for the existance? also some sub objectives may be more complex than 3 tasks, so make it at least 3 task for each sub objectives but feel free to add more if it makes more sense to do so, check other tasks too
+
+---
+RESULT: User is correct - scoring verifies RESULTS, not methods (like real RHCSA).
+Task descriptions guide practice, but validation checks outcomes only.
+
+Expanded to 45 tasks with variable count per sub-objective:
+- Sub-obj 1 (Shell): 4 tasks
+- Sub-obj 2 (I/O Redirect): 5 tasks
+- Sub-obj 3 (grep/regex): 6 tasks
+- Sub-obj 4 (SSH): 3 tasks
+- Sub-obj 5 (Users): 4 tasks
+- Sub-obj 6 (Archive): 5 tasks
+- Sub-obj 7 (Text files): 4 tasks
+- Sub-obj 8 (File ops): 5 tasks
+- Sub-obj 9 (Links): 4 tasks
+- Sub-obj 10 (Permissions): 5 tasks
+- Sub-obj 11 (Docs): 4 tasks
+
+Added new task types: xz compression, symlink chains, recursive permissions,
+apropos usage, hidden files, archive listing, config file edits, etc.
+
+================================================================================
