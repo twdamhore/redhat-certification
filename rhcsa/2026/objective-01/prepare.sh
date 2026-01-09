@@ -3,7 +3,8 @@
 # RHCSA Objective 1: Understand and Use Essential Tools
 # Preparation Script - Sets up the exam environment
 #
-# This script creates tasks that are 20% harder than standard RHCSA requirements
+# 11 Sub-objectives × 3 Tasks = 33 Tasks Total
+# Difficulty: RHCSA + 20%
 # Target: AlmaLinux 10.1 / RHEL 10
 #
 # Run as root: sudo ./prepare.sh
@@ -11,14 +12,13 @@
 
 set -e
 
-# Colors for output
 RED='\033[0;31m'
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 BLUE='\033[0;34m'
-NC='\033[0m' # No Color
+CYAN='\033[0;36m'
+NC='\033[0m'
 
-# Check if running as root
 if [[ $EUID -ne 0 ]]; then
    echo -e "${RED}This script must be run as root${NC}"
    exit 1
@@ -30,473 +30,549 @@ echo -e "${BLUE}  Preparation Script${NC}"
 echo -e "${BLUE}============================================${NC}"
 echo ""
 
-# Create exam working directory
 EXAM_DIR="/exam/objective1"
+rm -rf "$EXAM_DIR" 2>/dev/null || true
 mkdir -p "$EXAM_DIR"
-cd "$EXAM_DIR"
 
 echo -e "${GREEN}[*] Setting up exam environment...${NC}"
 
 # ============================================
-# TASK 1: Input/Output Redirection (Advanced)
+# Create users and groups
 # ============================================
-echo -e "${YELLOW}[Task 1] Setting up I/O Redirection challenges...${NC}"
+echo -e "${YELLOW}[*] Creating users and groups...${NC}"
 
-mkdir -p "$EXAM_DIR/task1_redirection"
-cd "$EXAM_DIR/task1_redirection"
-
-# Create sample log files with mixed output
-cat > application.log << 'EOF'
-2026-01-09 10:00:01 INFO Application started successfully
-2026-01-09 10:00:02 DEBUG Loading configuration from /etc/app/config.yml
-2026-01-09 10:00:03 WARNING Configuration file has deprecated settings
-2026-01-09 10:00:04 ERROR Failed to connect to database: timeout
-2026-01-09 10:00:05 INFO Retrying database connection...
-2026-01-09 10:00:06 ERROR Database connection failed: host unreachable
-2026-01-09 10:00:07 CRITICAL Application shutting down due to fatal error
-2026-01-09 10:01:00 INFO Application restarted
-2026-01-09 10:01:01 INFO Database connection established
-2026-01-09 10:01:02 WARNING Memory usage above 80%
-2026-01-09 10:01:03 ERROR Disk space low on /var/log
-2026-01-09 10:01:04 INFO User login: admin from 192.168.1.100
-2026-01-09 10:01:05 DEBUG Query executed: SELECT * FROM users
-EOF
-
-# Create a script that outputs to both stdout and stderr
-cat > mixed_output.sh << 'EOF'
-#!/bin/bash
-echo "Starting process..."
-echo "Error: Cannot find config file" >&2
-echo "Attempting fallback..."
-echo "Warning: Using default values" >&2
-echo "Process completed successfully"
-echo "Error: Minor issue detected" >&2
-EOF
-chmod +x mixed_output.sh
-
-# ============================================
-# TASK 2: grep and Regular Expressions (Advanced)
-# ============================================
-echo -e "${YELLOW}[Task 2] Setting up grep/regex challenges...${NC}"
-
-mkdir -p "$EXAM_DIR/task2_grep"
-cd "$EXAM_DIR/task2_grep"
-
-# Create complex data files
-cat > employees.csv << 'EOF'
-ID,Name,Email,Department,Salary,Phone,HireDate
-001,John Smith,john.smith@company.com,Engineering,75000,555-123-4567,2020-03-15
-002,Jane Doe,jane.doe@company.com,Marketing,65000,555-234-5678,2019-07-22
-003,Bob Johnson,bob.j@external.org,Engineering,82000,555-345-6789,2018-11-30
-004,Alice Williams,alice.w@company.com,HR,58000,555-456-7890,2021-01-10
-005,Charlie Brown,charlie.brown@company.com,Engineering,95000,555-567-8901,2017-05-20
-006,Diana Prince,diana@external.net,Marketing,71000,555-678-9012,2022-02-28
-007,Edward Norton,e.norton@company.com,Finance,88000,555-789-0123,2016-09-14
-008,Fiona Green,fiona.green@company.com,Engineering,79000,555-890-1234,2019-12-01
-009,George White,g.white@external.org,HR,62000,555-901-2345,2020-06-15
-010,Helen Black,helen.b@company.com,Finance,92000,555-012-3456,2015-04-22
-EOF
-
-cat > servers.conf << 'EOF'
-# Server Configuration File
-# Format: hostname:ip:port:status:environment
-
-webserver01:192.168.1.10:80:active:production
-webserver02:192.168.1.11:80:active:production
-webserver03:192.168.1.12:8080:inactive:staging
-dbserver01:192.168.2.20:3306:active:production
-dbserver02:192.168.2.21:3306:standby:production
-appserver01:10.0.0.100:8443:active:production
-appserver02:10.0.0.101:8443:active:staging
-cache01:172.16.0.50:6379:active:production
-cache02:172.16.0.51:6379:inactive:development
-monitor01:192.168.3.30:9090:active:production
-# backup servers below
-backup01:192.168.4.40:22:active:production
-backup02:192.168.4.41:22:standby:disaster-recovery
-EOF
-
-cat > access.log << 'EOF'
-192.168.1.100 - - [09/Jan/2026:10:00:01 +0000] "GET /index.html HTTP/1.1" 200 1234
-192.168.1.101 - - [09/Jan/2026:10:00:02 +0000] "POST /api/login HTTP/1.1" 200 567
-10.0.0.50 - - [09/Jan/2026:10:00:03 +0000] "GET /admin/dashboard HTTP/1.1" 403 89
-192.168.1.100 - - [09/Jan/2026:10:00:04 +0000] "GET /images/logo.png HTTP/1.1" 200 45678
-172.16.0.200 - - [09/Jan/2026:10:00:05 +0000] "DELETE /api/users/15 HTTP/1.1" 401 123
-192.168.1.102 - - [09/Jan/2026:10:00:06 +0000] "PUT /api/config HTTP/1.1" 500 234
-10.0.0.51 - - [09/Jan/2026:10:00:07 +0000] "GET /static/style.css HTTP/1.1" 304 0
-192.168.1.100 - - [09/Jan/2026:10:00:08 +0000] "POST /api/upload HTTP/1.1" 201 789
-172.16.0.201 - - [09/Jan/2026:10:00:09 +0000] "GET /api/users HTTP/1.1" 200 5678
-192.168.1.103 - - [09/Jan/2026:10:00:10 +0000] "GET /nonexistent HTTP/1.1" 404 100
-EOF
-
-# ============================================
-# TASK 3: SSH Configuration (Local Setup)
-# ============================================
-echo -e "${YELLOW}[Task 3] Setting up SSH challenges...${NC}"
-
-mkdir -p "$EXAM_DIR/task3_ssh"
-cd "$EXAM_DIR/task3_ssh"
-
-# Create a requirements file for the candidate
-cat > ssh_requirements.txt << 'EOF'
-SSH Configuration Requirements:
-==============================
-
-You need to configure SSH for user 'examuser' with the following specifications:
-
-1. Create an SSH key pair (Ed25519 algorithm) with a specific comment
-2. Configure SSH client settings in ~/.ssh/config
-3. Set proper permissions on all SSH files
-4. Configure SSH to use a specific identity file for certain hosts
-
-Target configurations will be verified by the scoring script.
-EOF
-
-# ============================================
-# TASK 4: Archive and Compression (Advanced)
-# ============================================
-echo -e "${YELLOW}[Task 4] Setting up archive/compression challenges...${NC}"
-
-mkdir -p "$EXAM_DIR/task4_archive"
-cd "$EXAM_DIR/task4_archive"
-
-# Create a complex directory structure to archive
-mkdir -p project/{src,docs,tests,config,.hidden}
-echo "Main application code" > project/src/main.c
-echo "Helper functions" > project/src/helpers.c
-echo "Header file" > project/src/main.h
-echo "API Documentation" > project/docs/api.md
-echo "User Guide" > project/docs/user_guide.md
-echo "Unit tests" > project/tests/test_main.c
-echo "Integration tests" > project/tests/test_integration.c
-echo "Production config" > project/config/production.yml
-echo "Development config" > project/config/development.yml
-echo "Secret keys - DO NOT ARCHIVE" > project/config/secrets.key
-echo "Hidden configuration" > project/.hidden/internal.conf
-echo "Cache file - exclude" > project/.hidden/cache.tmp
-touch -d "2025-06-15" project/src/main.c
-touch -d "2025-06-16" project/src/helpers.c
-touch -d "2025-07-01" project/docs/api.md
-
-# Create an existing archive for extraction task
-cd "$EXAM_DIR/task4_archive"
-mkdir -p extract_source
-echo "File 1 content" > extract_source/file1.txt
-echo "File 2 content" > extract_source/file2.txt
-mkdir -p extract_source/subdir
-echo "Nested file" > extract_source/subdir/nested.txt
-tar -czvf source_archive.tar.gz extract_source
-tar -cjvf source_archive.tar.bz2 extract_source
-xz -k -c extract_source/file1.txt > file1.txt.xz
-rm -rf extract_source
-
-# ============================================
-# TASK 5: File and Directory Operations (Advanced)
-# ============================================
-echo -e "${YELLOW}[Task 5] Setting up file operations challenges...${NC}"
-
-mkdir -p "$EXAM_DIR/task5_files"
-cd "$EXAM_DIR/task5_files"
-
-# Create complex file structure for operations
-mkdir -p source_files/{documents,images,backups,.config}
-for i in {1..5}; do
-    echo "Document $i content - $(date +%s%N | sha256sum | head -c 20)" > "source_files/documents/report_$i.txt"
-done
-for i in {1..3}; do
-    dd if=/dev/urandom bs=1024 count=1 2>/dev/null | base64 > "source_files/images/image_$i.jpg"
-done
-echo "backup_2025_01.sql" > source_files/backups/backup_2025_01.sql
-echo "backup_2025_02.sql" > source_files/backups/backup_2025_02.sql
-echo "app_settings=default" > source_files/.config/settings.ini
-echo "user_preferences=none" > source_files/.config/preferences.ini
-
-# Create files with special characters in names (tricky!)
-touch "source_files/documents/report with spaces.txt"
-touch "source_files/documents/report-with-dashes.txt"
-touch "source_files/documents/file_$(date +%Y%m%d).log"
-
-# ============================================
-# TASK 6: Hard and Soft Links (Advanced)
-# ============================================
-echo -e "${YELLOW}[Task 6] Setting up link challenges...${NC}"
-
-mkdir -p "$EXAM_DIR/task6_links"
-cd "$EXAM_DIR/task6_links"
-
-# Create original files for linking
-mkdir -p originals targets
-echo "This is the original configuration file version 1.0" > originals/config.conf
-echo "Shared library content - important system file" > originals/libshared.so
-echo "Application binary placeholder" > originals/application.bin
-echo "Log rotation target" > originals/current.log
-chmod 644 originals/config.conf
-chmod 755 originals/libshared.so
-chmod 755 originals/application.bin
-
-# Create a scenario file
-cat > link_requirements.txt << 'EOF'
-Link Creation Requirements:
-===========================
-
-Create the following links in the 'targets' directory:
-
-1. HARD LINK: config.conf.backup -> originals/config.conf
-2. SOFT LINK: lib -> originals/libshared.so
-3. SOFT LINK: app -> originals/application.bin (relative path required)
-4. SOFT LINK: latest.log -> originals/current.log (absolute path required)
-
-After creating links, verify:
-- Hard link has same inode as original
-- Soft links are relative/absolute as specified
-- All links are functional
-EOF
-
-# ============================================
-# TASK 7: Permissions (Advanced - includes special perms)
-# ============================================
-echo -e "${YELLOW}[Task 7] Setting up permissions challenges...${NC}"
-
-mkdir -p "$EXAM_DIR/task7_permissions"
-cd "$EXAM_DIR/task7_permissions"
-
-# Create user and group for testing if they don't exist
-id examuser &>/dev/null || useradd -m examuser
+# Create groups
 getent group examgroup &>/dev/null || groupadd examgroup
 getent group developers &>/dev/null || groupadd developers
-usermod -aG examgroup examuser 2>/dev/null || true
-usermod -aG developers examuser 2>/dev/null || true
+getent group operators &>/dev/null || groupadd operators
 
-# Create files and directories with specific permission requirements
-mkdir -p shared_project/{public,private,team,scripts}
+# Create users
+id examuser &>/dev/null || useradd -m -G examgroup,developers examuser
+id testuser &>/dev/null || useradd -m -G operators testuser
+id admin &>/dev/null || useradd -m admin
 
-echo "Public readme file" > shared_project/public/README.md
-echo "Private data - restricted access" > shared_project/private/data.db
-echo "Team document - group access only" > shared_project/team/project_plan.md
-echo '#!/bin/bash\necho "Team script executed by: $(whoami)"' > shared_project/scripts/deploy.sh
-echo '#!/bin/bash\necho "Admin only script"' > shared_project/scripts/admin_tool.sh
-mkdir -p shared_project/uploads
+# Set passwords (for user switching tasks)
+echo "examuser:exam123" | chpasswd
+echo "testuser:test123" | chpasswd
+echo "admin:admin123" | chpasswd
 
-# Create permission requirements
-cat > permission_requirements.txt << 'EOF'
-Permission Configuration Requirements:
-======================================
+# ============================================
+# SUB-OBJECTIVE 1: Shell Commands
+# ============================================
+echo -e "${YELLOW}[1/11] Setting up shell command tasks...${NC}"
 
-Configure permissions for shared_project/ as follows:
+mkdir -p "$EXAM_DIR/1_shell_commands"
+cd "$EXAM_DIR/1_shell_commands"
 
-1. public/README.md:
-   - Owner: examuser, Group: examgroup
-   - Permissions: rw-r--r-- (644)
+# Create source files for command tasks
+mkdir -p data
+echo "server1.example.com" > data/server1.txt
+echo "server2.example.com" > data/server2.txt
+echo "server3.example.com" > data/server3.txt
+for i in {1..5}; do echo "log entry $i" > "data/log_$i.txt"; done
 
-2. private/data.db:
-   - Owner: root, Group: root
-   - Permissions: rw------- (600)
+# ============================================
+# SUB-OBJECTIVE 2: I/O Redirection
+# ============================================
+echo -e "${YELLOW}[2/11] Setting up I/O redirection tasks...${NC}"
 
-3. team/project_plan.md:
-   - Owner: examuser, Group: developers
-   - Permissions: rw-rw---- (660)
+mkdir -p "$EXAM_DIR/2_redirection"
+cd "$EXAM_DIR/2_redirection"
 
-4. scripts/deploy.sh:
-   - Owner: root, Group: developers
-   - Permissions: rwxr-x--- (750) with SETGID bit
+# Create script with mixed output
+cat > generate_report.sh << 'SCRIPT'
+#!/bin/bash
+echo "Report Generation Started"
+echo "Warning: Old data detected" >&2
+echo "Processing record 1..."
+echo "Processing record 2..."
+echo "Error: Record 3 corrupted" >&2
+echo "Processing record 4..."
+echo "Error: Database timeout" >&2
+echo "Report Generation Complete"
+SCRIPT
+chmod +x generate_report.sh
 
-5. scripts/admin_tool.sh:
-   - Owner: root, Group: root
-   - Permissions: rwx------ (700) with SETUID bit
-
-6. uploads/ directory:
-   - Owner: examuser, Group: examgroup
-   - Permissions: rwxrwx--T (1770) - STICKY BIT set
-
-7. shared_project/ directory:
-   - Apply SETGID so new files inherit group ownership
+# Create log file for processing
+cat > system.log << 'EOF'
+Jan 09 10:00:01 server sshd[1234]: Accepted publickey for root
+Jan 09 10:00:02 server kernel: Out of memory: Kill process
+Jan 09 10:00:03 server sshd[1235]: Failed password for invalid user
+Jan 09 10:00:04 server systemd[1]: Started Apache
+Jan 09 10:00:05 server kernel: CPU0: Temperature above threshold
+Jan 09 10:00:06 server sshd[1236]: Accepted password for admin
+Jan 09 10:00:07 server kernel: Kernel panic - not syncing
+Jan 09 10:00:08 server crond[999]: Job started
+Jan 09 10:00:09 server sshd[1237]: Failed password for root
+Jan 09 10:00:10 server systemd[1]: Stopping firewalld
 EOF
 
 # ============================================
-# TASK 8: System Documentation
+# SUB-OBJECTIVE 3: grep and regex
 # ============================================
-echo -e "${YELLOW}[Task 8] Setting up documentation challenges...${NC}"
+echo -e "${YELLOW}[3/11] Setting up grep/regex tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/task8_documentation"
-cd "$EXAM_DIR/task8_documentation"
+mkdir -p "$EXAM_DIR/3_grep"
+cd "$EXAM_DIR/3_grep"
 
-cat > documentation_tasks.txt << 'EOF'
-Documentation Research Tasks:
-=============================
+cat > users.txt << 'EOF'
+jsmith:x:1001:1001:John Smith:/home/jsmith:/bin/bash
+jdoe:x:1002:1002:Jane Doe:/home/jdoe:/bin/bash
+bob:x:1003:1003:Bob Johnson:/home/bob:/sbin/nologin
+alice:x:1004:1004:Alice Williams:/home/alice:/bin/bash
+charlie:x:1005:1005:Charlie Brown:/home/charlie:/bin/zsh
+sysadmin:x:1006:1006:System Admin:/home/sysadmin:/bin/bash
+backup:x:1007:1007:Backup User:/var/backup:/sbin/nologin
+mysql:x:27:27:MySQL Server:/var/lib/mysql:/sbin/nologin
+nginx:x:998:998:Nginx User:/var/lib/nginx:/sbin/nologin
+developer:x:1008:1008:Dev User:/home/developer:/bin/bash
+EOF
 
-Using man, info, and /usr/share/doc, find answers to:
+cat > network.conf << 'EOF'
+# Network Configuration
+interface=eth0
+ip_address=192.168.1.100
+netmask=255.255.255.0
+gateway=192.168.1.1
+dns1=8.8.8.8
+dns2=8.8.4.4
 
-1. Find the configuration file location for the 'sudoers' using man pages
-   Save answer to: answer1.txt
+# Secondary Interface
+interface=eth1
+ip_address=10.0.0.50
+netmask=255.255.0.0
+# gateway not set for eth1
 
-2. Find which man section contains information about file formats
-   Save answer to: answer2.txt
+# Management Interface
+interface=mgmt0
+ip_address=172.16.100.25
+netmask=255.255.255.128
+gateway=172.16.100.1
+EOF
 
-3. Find the option for 'tar' that preserves extended attributes (xattr)
-   Save answer to: answer3.txt
-
-4. Using man pages, find the default umask value mentioned in bash documentation
-   Save answer to: answer4.txt
-
-5. Locate and read the README file for 'systemd' in /usr/share/doc
-   Record the main purpose stated in: answer5.txt
+cat > webserver.log << 'EOF'
+192.168.1.50 - - [09/Jan/2026:10:15:01] "GET /index.html" 200 1234
+10.0.0.100 - - [09/Jan/2026:10:15:02] "POST /api/login" 401 89
+192.168.1.50 - - [09/Jan/2026:10:15:03] "GET /style.css" 200 567
+172.16.0.25 - - [09/Jan/2026:10:15:04] "GET /admin" 403 120
+192.168.1.75 - - [09/Jan/2026:10:15:05] "DELETE /api/user/5" 500 45
+10.0.0.100 - - [09/Jan/2026:10:15:06] "POST /api/login" 200 234
+192.168.1.50 - - [09/Jan/2026:10:15:07] "GET /images/logo.png" 404 78
+10.0.0.101 - - [09/Jan/2026:10:15:08] "PUT /api/config" 201 456
+192.168.1.100 - - [09/Jan/2026:10:15:09] "GET /dashboard" 200 2345
+172.16.0.30 - - [09/Jan/2026:10:15:10] "GET /secret" 403 90
 EOF
 
 # ============================================
-# TASK 9: Text File Creation and Editing
+# SUB-OBJECTIVE 4: SSH
 # ============================================
-echo -e "${YELLOW}[Task 9] Setting up text editing challenges...${NC}"
+echo -e "${YELLOW}[4/11] Setting up SSH tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/task9_editing"
-cd "$EXAM_DIR/task9_editing"
+mkdir -p "$EXAM_DIR/4_ssh"
+cd "$EXAM_DIR/4_ssh"
 
-# Create file that needs editing
-cat > network_config.txt << 'EOF'
-# Network Configuration File
-# Generated: 2025-01-01
+# Ensure examuser's .ssh doesn't exist (clean slate)
+rm -rf /home/examuser/.ssh 2>/dev/null || true
 
-[interface]
-name=eth0
-type=Ethernet
-bootproto=dhcp
-onboot=yes
+# ============================================
+# SUB-OBJECTIVE 5: Users and Multiuser
+# ============================================
+echo -e "${YELLOW}[5/11] Setting up user switching tasks...${NC}"
 
-[dns]
-server1=8.8.8.8
-server2=8.8.4.4
+mkdir -p "$EXAM_DIR/5_users"
+cd "$EXAM_DIR/5_users"
 
-[routes]
-default=192.168.1.1
+# Create a file that needs specific ownership
+echo "Confidential data" > confidential.txt
+chmod 600 confidential.txt
+chown root:root confidential.txt
 
-# End of configuration
+# Create directory for user collaboration
+mkdir -p shared_workspace
+chmod 770 shared_workspace
+chown root:developers shared_workspace
+
+# ============================================
+# SUB-OBJECTIVE 6: Archive and Compression
+# ============================================
+echo -e "${YELLOW}[6/11] Setting up archive tasks...${NC}"
+
+mkdir -p "$EXAM_DIR/6_archive"
+cd "$EXAM_DIR/6_archive"
+
+# Create project structure
+mkdir -p webapp/{src,config,logs,tmp,public}
+echo "main.py" > webapp/src/main.py
+echo "utils.py" > webapp/src/utils.py
+echo "app.js" > webapp/public/app.js
+echo "style.css" > webapp/public/style.css
+echo "config.yml" > webapp/config/config.yml
+echo "secrets.yml" > webapp/config/secrets.yml
+echo "app.log" > webapp/logs/app.log
+echo "debug.log" > webapp/logs/debug.log
+echo "cache.tmp" > webapp/tmp/cache.tmp
+echo "session.tmp" > webapp/tmp/session.tmp
+
+# Set specific timestamps for testing
+touch -d "2025-06-01 10:00:00" webapp/src/main.py
+touch -d "2025-06-15 14:30:00" webapp/src/utils.py
+touch -d "2025-07-01 09:00:00" webapp/config/config.yml
+
+# Create an archive for extraction tasks
+mkdir -p backup_data
+echo "database.sql" > backup_data/database.sql
+echo "users.csv" > backup_data/users.csv
+mkdir -p backup_data/attachments
+echo "file1.pdf" > backup_data/attachments/file1.pdf
+echo "file2.pdf" > backup_data/attachments/file2.pdf
+tar -czvf backup.tar.gz backup_data 2>/dev/null
+rm -rf backup_data
+
+# ============================================
+# SUB-OBJECTIVE 7: Text Files
+# ============================================
+echo -e "${YELLOW}[7/11] Setting up text editing tasks...${NC}"
+
+mkdir -p "$EXAM_DIR/7_textfiles"
+cd "$EXAM_DIR/7_textfiles"
+
+cat > hosts.local << 'EOF'
+# Local host entries
+127.0.0.1   localhost localhost.localdomain
+::1         localhost localhost.localdomain
+
+# Application servers
+192.168.1.10  webserver1
+192.168.1.11  webserver2
+192.168.1.20  dbserver
+
+# Development
+10.0.0.100   devbox
 EOF
 
-cat > editing_tasks.txt << 'EOF'
-Text Editing Tasks:
-===================
+cat > application.conf << 'EOF'
+# Application Configuration
+app_name=myapp
+app_port=8080
+debug_mode=true
+log_level=INFO
 
-1. Create a new file called 'server_info.txt' containing EXACTLY:
-   - Line 1: Hostname: examserver
-   - Line 2: IP: 192.168.100.50
-   - Line 3: Gateway: 192.168.100.1
-   - Line 4: DNS: 192.168.100.2
-   (No trailing blank lines, no leading spaces)
+# Database settings
+db_host=localhost
+db_port=3306
+db_name=production
+db_user=appuser
 
-2. Modify network_config.txt:
-   - Change bootproto from 'dhcp' to 'static'
-   - Add 'ipaddr=10.0.0.100' after the bootproto line
-   - Add 'netmask=255.255.255.0' after ipaddr
-   - Change server1 DNS to '1.1.1.1'
-   - Add a comment '# Modified by examuser' at the end
-
-3. Create a file 'multiline.txt' with exactly 10 lines numbered 1-10
-   Each line should contain: "Line X: $(random_content)"
-   Where X is line number and content is anything
-
-4. Append the current date to 'server_info.txt' as a 5th line
-   Format: Date: YYYY-MM-DD
+# Cache settings
+cache_enabled=false
+cache_ttl=300
 EOF
 
 # ============================================
-# Summary and Instructions
+# SUB-OBJECTIVE 8: File Operations
 # ============================================
-echo -e "${YELLOW}[*] Creating task summary...${NC}"
+echo -e "${YELLOW}[8/11] Setting up file operation tasks...${NC}"
 
-mkdir -p "$EXAM_DIR"
-cat > "$EXAM_DIR/INSTRUCTIONS.txt" << 'EOF'
+mkdir -p "$EXAM_DIR/8_files"
+cd "$EXAM_DIR/8_files"
+
+mkdir -p source/{documents,images,videos,misc}
+echo "Report Q1 2025" > "source/documents/report_q1.txt"
+echo "Report Q2 2025" > "source/documents/report_q2.txt"
+echo "Report Q3 2025" > "source/documents/report_q3.txt"
+echo "Meeting notes" > "source/documents/meeting_notes.txt"
+echo "Budget 2025" > "source/documents/budget_2025.xlsx"
+dd if=/dev/urandom bs=100 count=1 2>/dev/null | base64 > source/images/photo1.jpg
+dd if=/dev/urandom bs=100 count=1 2>/dev/null | base64 > source/images/photo2.jpg
+dd if=/dev/urandom bs=100 count=1 2>/dev/null | base64 > source/images/photo3.png
+echo "video content" > source/videos/intro.mp4
+echo "misc file" > source/misc/notes.txt
+echo "temp data" > source/misc/temp.bak
+touch source/documents/.hidden_doc
+
+# ============================================
+# SUB-OBJECTIVE 9: Links
+# ============================================
+echo -e "${YELLOW}[9/11] Setting up link tasks...${NC}"
+
+mkdir -p "$EXAM_DIR/9_links"
+cd "$EXAM_DIR/9_links"
+
+mkdir -p original
+echo "Configuration file v1.0" > original/app.conf
+echo "Library content" > original/libcustom.so
+echo "Current log data" > original/application.log
+chmod 644 original/app.conf
+chmod 755 original/libcustom.so
+chmod 644 original/application.log
+
+mkdir -p links
+
+# ============================================
+# SUB-OBJECTIVE 10: Permissions
+# ============================================
+echo -e "${YELLOW}[10/11] Setting up permissions tasks...${NC}"
+
+mkdir -p "$EXAM_DIR/10_permissions"
+cd "$EXAM_DIR/10_permissions"
+
+mkdir -p project/{bin,data,shared,uploads,config}
+echo "#!/bin/bash" > project/bin/run.sh
+echo "#!/bin/bash" > project/bin/admin.sh
+echo "data content" > project/data/records.db
+echo "shared doc" > project/shared/readme.txt
+echo "config data" > project/config/settings.ini
+echo "secret config" > project/config/credentials.conf
+
+# ============================================
+# SUB-OBJECTIVE 11: Documentation
+# ============================================
+echo -e "${YELLOW}[11/11] Setting up documentation tasks...${NC}"
+
+mkdir -p "$EXAM_DIR/11_documentation"
+cd "$EXAM_DIR/11_documentation"
+
+# Create answer files placeholder directory
+mkdir -p answers
+
+# ============================================
+# Create Instructions File
+# ============================================
+cat > "$EXAM_DIR/TASKS.txt" << 'TASKFILE'
 ================================================================================
-                RHCSA Objective 1: Understand and Use Essential Tools
-                            EXAM PRACTICE TASKS
+           RHCSA OBJECTIVE 1: UNDERSTAND AND USE ESSENTIAL TOOLS
+                        33 TASKS - 100 POINTS TOTAL
 ================================================================================
 
-Time Limit: 90 minutes (suggested)
-Passing Score: 70%
-Difficulty: RHCSA + 20%
+Time Suggested: 90 minutes
+Pass Score: 70 points
 
-INSTRUCTIONS:
--------------
-1. Complete all tasks in the directories below
-2. Do NOT modify any files with 'requirements' or 'tasks' in the name
-3. Use ONLY command-line tools (no GUI)
-4. You may use man, info, and /usr/share/doc for reference
-5. Run score.sh when complete to check your progress
-
-TASK DIRECTORIES:
------------------
-/exam/objective1/task1_redirection/  - I/O Redirection (10 points)
-/exam/objective1/task2_grep/         - grep and Regular Expressions (15 points)
-/exam/objective1/task3_ssh/          - SSH Configuration (10 points)
-/exam/objective1/task4_archive/      - Archive and Compression (15 points)
-/exam/objective1/task5_files/        - File Operations (10 points)
-/exam/objective1/task6_links/        - Hard and Soft Links (10 points)
-/exam/objective1/task7_permissions/  - Permissions (20 points)
-/exam/objective1/task8_documentation/- System Documentation (5 points)
-/exam/objective1/task9_editing/      - Text Editing (5 points)
-
-SPECIFIC TASKS:
----------------
-
-TASK 1 - I/O Redirection (Complete in task1_redirection/):
-a) Run mixed_output.sh and redirect ONLY errors to 'errors.log'
-b) Run mixed_output.sh and redirect stdout to 'output.log', stderr to 'errors2.log'
-c) Extract all ERROR and CRITICAL lines from application.log to 'critical.log'
-d) Count total lines in application.log, save count (number only) to 'linecount.txt'
-e) Create a pipeline: cat application.log | filter WARNING | count > warnings_count.txt
-
-TASK 2 - grep and Regular Expressions (Complete in task2_grep/):
-a) Find all @company.com emails in employees.csv, save to 'company_emails.txt'
-b) Find employees with salary >= 80000, save full lines to 'high_earners.txt'
-c) Find all active production servers from servers.conf to 'active_prod.txt'
-d) Extract all IP addresses from access.log to 'ip_addresses.txt' (IPs only, unique)
-e) Find all HTTP error codes (4xx and 5xx) from access.log to 'http_errors.txt'
-f) Find lines NOT starting with # in servers.conf to 'servers_only.txt'
-
-TASK 3 - SSH Configuration (Complete in task3_ssh/ and ~examuser/.ssh/):
-a) Generate Ed25519 SSH key pair for examuser (no passphrase, comment: "examuser@rhcsa")
-b) Create ~/.ssh/config for examuser with Host entry "examserver" pointing to 127.0.0.1
-c) Set correct permissions: .ssh (700), private key (600), public key (644), config (600)
-
-TASK 4 - Archive and Compression (Complete in task4_archive/):
-a) Create 'project.tar.gz' from project/ EXCLUDING *.key and *.tmp files
-b) Create 'project.tar.bz2' with ONLY the src/ directory, preserving permissions
-c) Extract source_archive.tar.gz to 'extracted_gz/' directory
-d) Extract ONLY file1.txt.xz to 'extracted_xz/' directory
-e) Create 'project.tar.xz' from project/ with maximum compression
-
-TASK 5 - File Operations (Complete in task5_files/):
-a) Copy ALL .txt files from source_files/documents/ to a new 'txt_backup/' directory
-b) Move all .sql files to a new 'database_backups/' directory
-c) Create directory structure: organized/{docs,media,config} in one command
-d) Delete all files in source_files/.config/ but keep the directory
-e) Rename all .jpg files in source_files/images/ to .jpeg extension
-
-TASK 6 - Hard and Soft Links (Complete in task6_links/targets/):
-a) Create hard link: config.conf.backup -> originals/config.conf
-b) Create symbolic link: lib -> originals/libshared.so (relative path)
-c) Create symbolic link: app -> ../originals/application.bin (relative)
-d) Create symbolic link: latest.log -> /exam/objective1/task6_links/originals/current.log
-
-TASK 7 - Permissions (Complete in task7_permissions/):
-Apply ALL permissions as specified in permission_requirements.txt
-Pay special attention to:
-- SETUID on admin_tool.sh
-- SETGID on deploy.sh and shared_project/ directory
-- STICKY BIT on uploads/
-
-TASK 8 - Documentation (Complete in task8_documentation/):
-Research and save answers as specified in documentation_tasks.txt
-
-TASK 9 - Text Editing (Complete in task9_editing/):
-Complete all tasks as specified in editing_tasks.txt
+IMPORTANT:
+- Complete tasks in the directories under /exam/objective1/
+- Run 'score.sh' to check your progress
+- Each task is worth approximately 3 points
+- Tasks marked [HARDER] are 20% above standard RHCSA difficulty
 
 ================================================================================
-                           Good luck!
+SUB-OBJECTIVE 1: ACCESS SHELL AND ISSUE COMMANDS (9 points)
+Directory: /exam/objective1/1_shell_commands/
 ================================================================================
+
+Task 1.1 [HARDER]
+Using a SINGLE command with brace expansion, create these files in the current
+directory: file_a.txt, file_b.txt, file_c.txt
+
+Task 1.2 [HARDER]
+Using command substitution, create a file called 'hostname.txt' that contains
+ONLY the system's hostname (no newline issues, just the hostname)
+
+Task 1.3 [HARDER]
+Using a single command line, count the total number of .txt files in the 'data'
+subdirectory and save ONLY the number to 'count.txt'
+
+================================================================================
+SUB-OBJECTIVE 2: INPUT-OUTPUT REDIRECTION (9 points)
+Directory: /exam/objective1/2_redirection/
+================================================================================
+
+Task 2.1
+Run './generate_report.sh' and redirect ONLY the error messages to 'errors.log'
+(stdout should still display on screen)
+
+Task 2.2 [HARDER]
+Run './generate_report.sh' redirecting stdout to 'stdout.log' and stderr to
+'stderr.log' (both in the same command)
+
+Task 2.3 [HARDER]
+From 'system.log', extract lines containing "sshd" AND containing "Failed",
+then count them, saving only the count number to 'failed_ssh.txt'
+
+================================================================================
+SUB-OBJECTIVE 3: GREP AND REGULAR EXPRESSIONS (9 points)
+Directory: /exam/objective1/3_grep/
+================================================================================
+
+Task 3.1 [HARDER]
+From 'users.txt', extract only the usernames (first field before :) of users
+who have '/bin/bash' as their shell. Save to 'bash_users.txt' (one per line)
+
+Task 3.2 [HARDER]
+From 'network.conf', extract all IP addresses (just the IPs, not the full lines).
+Save unique IPs only to 'ip_list.txt', sorted numerically
+
+Task 3.3 [HARDER]
+From 'webserver.log', find all requests that resulted in HTTP 4xx or 5xx errors.
+Save the full log lines to 'http_errors.log'
+
+================================================================================
+SUB-OBJECTIVE 4: ACCESS REMOTE SYSTEMS USING SSH (9 points)
+Directory: /exam/objective1/4_ssh/ and /home/examuser/.ssh/
+================================================================================
+
+Task 4.1 [HARDER]
+As user 'examuser', generate an Ed25519 SSH key pair with:
+- No passphrase
+- Comment: "examuser@rhcsa-lab"
+- Save in the default location (~/.ssh/)
+
+Task 4.2
+Create an SSH config file for 'examuser' at ~/.ssh/config with a host alias
+'lab' that connects to 127.0.0.1 as user 'examuser'
+
+Task 4.3
+Ensure all SSH files for 'examuser' have correct permissions:
+- ~/.ssh directory: 700
+- Private key: 600
+- Public key: 644
+- Config file: 600
+
+================================================================================
+SUB-OBJECTIVE 5: LOG IN AND SWITCH USERS (9 points)
+Directory: /exam/objective1/5_users/
+================================================================================
+
+Task 5.1
+Switch to user 'examuser' and create a file 'examuser_was_here.txt' in the
+5_users directory containing the text "Created by examuser"
+
+Task 5.2 [HARDER]
+As user 'examuser', use sudo to create a file 'sudo_test.txt' in /exam/objective1/5_users/
+owned by root, containing "Created with sudo"
+(Note: examuser has been granted sudo access for this task)
+
+Task 5.3 [HARDER]
+Create a file 'shared_workspace/team_file.txt' as user 'examuser' containing
+"Team collaboration file". The file must be owned by examuser:developers
+
+================================================================================
+SUB-OBJECTIVE 6: ARCHIVE, COMPRESS, UNPACK FILES (9 points)
+Directory: /exam/objective1/6_archive/
+================================================================================
+
+Task 6.1 [HARDER]
+Create 'webapp_src.tar.gz' containing ONLY the 'webapp/src' and 'webapp/public'
+directories (not config, logs, or tmp)
+
+Task 6.2 [HARDER]
+Create 'webapp_backup.tar.bz2' containing the entire 'webapp' directory but
+EXCLUDING all .tmp files and the 'logs' directory
+
+Task 6.3
+Extract 'backup.tar.gz' into a new directory called 'restored'
+
+================================================================================
+SUB-OBJECTIVE 7: CREATE AND EDIT TEXT FILES (9 points)
+Directory: /exam/objective1/7_textfiles/
+================================================================================
+
+Task 7.1
+Create a new file 'server_info.txt' with exactly these 4 lines:
+Hostname: rhcsa-lab
+IP: 192.168.100.10
+Gateway: 192.168.100.1
+DNS: 8.8.8.8
+
+Task 7.2 [HARDER]
+Modify 'application.conf':
+- Change debug_mode from 'true' to 'false'
+- Change log_level from 'INFO' to 'WARNING'
+- Change cache_enabled from 'false' to 'true'
+
+Task 7.3
+Append a new host entry to 'hosts.local':
+192.168.1.50  monitoring
+
+================================================================================
+SUB-OBJECTIVE 8: FILE AND DIRECTORY OPERATIONS (9 points)
+Directory: /exam/objective1/8_files/
+================================================================================
+
+Task 8.1
+Copy ALL .txt files from 'source/documents/' to a new directory 'backup/docs/'
+(create the directory structure as needed)
+
+Task 8.2 [HARDER]
+Move all image files (.jpg and .png) from 'source/images/' to a new directory
+'archive/images/' and rename them with prefix 'img_' (e.g., photo1.jpg becomes
+img_photo1.jpg)
+
+Task 8.3 [HARDER]
+Create this directory structure in a SINGLE command:
+  organized/2025/{q1,q2,q3,q4}/reports
+
+================================================================================
+SUB-OBJECTIVE 9: CREATE HARD AND SOFT LINKS (9 points)
+Directory: /exam/objective1/9_links/
+================================================================================
+
+Task 9.1
+In the 'links' directory, create a HARD link named 'app.conf.bak' pointing to
+'original/app.conf'
+
+Task 9.2 [HARDER]
+In the 'links' directory, create a SYMBOLIC link named 'lib' pointing to
+'original/libcustom.so' using a RELATIVE path
+
+Task 9.3 [HARDER]
+In the 'links' directory, create a SYMBOLIC link named 'current.log' pointing to
+'original/application.log' using an ABSOLUTE path
+
+================================================================================
+SUB-OBJECTIVE 10: LIST, SET, AND CHANGE PERMISSIONS (10 points)
+Directory: /exam/objective1/10_permissions/
+================================================================================
+
+Task 10.1
+Set permissions on 'project/data/records.db':
+- Owner: examuser, Group: examgroup
+- Permissions: rw-r----- (640)
+
+Task 10.2 [HARDER]
+Set permissions on 'project/bin/run.sh':
+- Owner: root, Group: developers
+- Permissions: rwxr-x--- with SETGID bit (2750)
+
+Task 10.3 [HARDER]
+Set permissions on 'project/uploads/':
+- Owner: examuser, Group: examgroup
+- Permissions: rwxrwx--- with STICKY bit (1770)
+
+================================================================================
+SUB-OBJECTIVE 11: USE SYSTEM DOCUMENTATION (10 points)
+Directory: /exam/objective1/11_documentation/answers/
+================================================================================
+
+Task 11.1
+Using man pages, find which signal number corresponds to SIGKILL.
+Save only the number to 'answers/signal_number.txt'
+
+Task 11.2 [HARDER]
+Using man pages, find the tar option that preserves SELinux security context.
+Save the long option name (e.g., --option-name) to 'answers/tar_selinux.txt'
+
+Task 11.3 [HARDER]
+Find the location of the rsyslog documentation in /usr/share/doc.
+Save the full directory path to 'answers/rsyslog_doc_path.txt'
+
+================================================================================
+                              END OF TASKS
+================================================================================
+
+Run: sudo /path/to/score.sh to check your progress
+
+TASKFILE
+
+# Grant sudo access to examuser for specific tasks
+cat > /etc/sudoers.d/examuser << 'EOF'
+examuser ALL=(ALL) NOPASSWD: /usr/bin/touch, /usr/bin/tee, /bin/touch
 EOF
+chmod 440 /etc/sudoers.d/examuser
 
-# Set ownership
+# Set final permissions
 chown -R root:root "$EXAM_DIR"
 chmod -R 755 "$EXAM_DIR"
+chmod 770 "$EXAM_DIR/5_users/shared_workspace"
+chown root:developers "$EXAM_DIR/5_users/shared_workspace"
 
 echo ""
 echo -e "${GREEN}============================================${NC}"
@@ -504,9 +580,13 @@ echo -e "${GREEN}  Environment setup complete!${NC}"
 echo -e "${GREEN}============================================${NC}"
 echo ""
 echo -e "Exam directory: ${BLUE}$EXAM_DIR${NC}"
-echo -e "Read instructions: ${BLUE}cat $EXAM_DIR/INSTRUCTIONS.txt${NC}"
-echo -e "Run scoring: ${BLUE}sudo ./score.sh${NC}"
+echo -e "Read tasks:     ${BLUE}cat $EXAM_DIR/TASKS.txt${NC}"
+echo -e "Check score:    ${BLUE}sudo ./score.sh${NC}"
 echo ""
-echo -e "${YELLOW}User 'examuser' has been created for testing purposes.${NC}"
-echo -e "${YELLOW}Groups 'examgroup' and 'developers' have been created.${NC}"
+echo -e "${CYAN}Users created:${NC}"
+echo -e "  examuser (password: exam123) - groups: examgroup, developers"
+echo -e "  testuser (password: test123) - groups: operators"
+echo -e "  admin    (password: admin123)"
+echo ""
+echo -e "${YELLOW}Good luck!${NC}"
 echo ""

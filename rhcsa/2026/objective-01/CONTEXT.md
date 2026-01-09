@@ -19,41 +19,49 @@ Practice environment for RHCSA (Red Hat Certified System Administrator) exam on 
 
 ```
 rhcsa/2026/objective-01/
-├── prepare.sh      # Run as root - sets up /exam/objective1/ with tasks
-├── score.sh        # Run as root - validates tasks, shows score (70% to pass)
+├── prepare.sh      # Run as root - sets up /exam/objective1/ with 33 tasks
+├── score.sh        # Run as root - validates tasks (70/100 to pass)
 ├── prompts.txt     # Log of all Claude Code prompts
 └── CONTEXT.md      # This file - project context for Claude
 ```
 
 ## Objective 1: Understand and Use Essential Tools
 
-Covers these RHCSA sub-objectives (with 20% harder tasks):
+**33 Tasks Total** (3 tasks × 11 sub-objectives)
 
-| Task | Points | Key Challenge |
-|------|--------|---------------|
-| I/O Redirection | 10 | stderr/stdout separation, complex pipes |
-| grep/Regex | 15 | Extended regex, unique extraction |
-| SSH Config | 10 | Ed25519 keys, custom config file |
-| Archive/Compression | 15 | tar exclusions, xz/bz2/gz formats |
-| File Operations | 10 | Hidden files, batch rename |
-| Hard/Soft Links | 10 | Relative vs absolute paths |
-| Permissions | 20 | SETUID, SETGID, STICKY BIT |
-| Documentation | 5 | man/info research |
-| Text Editing | 5 | Create/modify configs |
+| Sub-Obj | Topic | Points | Key Challenges |
+|---------|-------|--------|----------------|
+| 1 | Shell Commands | 9 | Brace expansion, command substitution |
+| 2 | I/O Redirection | 9 | stderr/stdout separation, pipelines |
+| 3 | grep/Regex | 9 | Extract usernames, IPs, HTTP errors |
+| 4 | SSH | 9 | Ed25519 keys, config file, permissions |
+| 5 | User Switching | 9 | su, sudo, file ownership |
+| 6 | Archive/Compression | 9 | tar.gz, tar.bz2, exclusions |
+| 7 | Text Files | 9 | Create, modify, append |
+| 8 | File Operations | 9 | Copy, move/rename, mkdir with brace |
+| 9 | Links | 9 | Hard links, relative/absolute symlinks |
+| 10 | Permissions | 10 | Standard perms, SETGID, STICKY bit |
+| 11 | Documentation | 10 | man pages research |
 
 ## Users/Groups Created by prepare.sh
 
-- User: `examuser`
-- Groups: `examgroup`, `developers`
+- Users: `examuser` (exam123), `testuser` (test123), `admin` (admin123)
+- Groups: `examgroup`, `developers`, `operators`
+
+## Scoring Behavior
+
+- **PASS**: Shows `[PASS] Task X.Y: what was verified`
+- **FAIL**: Shows `[    ] Task X.Y: Not complete` (no hints)
+- Pass threshold: 70/100 points
 
 ## Current Status
 
-- [x] Objective 1 scripts created
+- [x] Objective 1 scripts created (v2 - 33 tasks)
 - [ ] Objectives 2-10 (not started)
 
 ## RHCSA RHEL 10 Objectives (Full List)
 
-1. **Understand and use essential tools** ← CURRENT
+1. **Understand and use essential tools** ← DONE
 2. Manage software (RPM repositories, Flatpak)
 3. Create simple shell scripts
 4. Operate running systems
@@ -68,7 +76,8 @@ Covers these RHCSA sub-objectives (with 20% harder tasks):
 
 - Containers (Podman) removed from RHCSA 10
 - Flatpak added to RHCSA 10
-- 20 GiB disk has unallocated space for storage tasks (Objectives 3-4)
+- 20 GiB disk has unallocated space for storage tasks (Objectives 5-6)
+- prepare.sh is idempotent - rerun to reset environment
 
 ## How to Use
 
@@ -76,9 +85,10 @@ Covers these RHCSA sub-objectives (with 20% harder tasks):
 # On VM:
 git clone https://github.com/twdamhore/redhat-certification.git
 cd redhat-certification/rhcsa/2026/objective-01
-sudo ./prepare.sh
-# complete tasks in /exam/objective1/
-sudo ./score.sh
+sudo ./prepare.sh    # Sets up environment (rerun to reset)
+cat /exam/objective1/TASKS.txt  # Read task instructions
+# complete tasks...
+sudo ./score.sh      # Check score
 ```
 
 ---

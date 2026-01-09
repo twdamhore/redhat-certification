@@ -45,3 +45,35 @@ Missing objectives were:
 - Objective 3: Create simple shell scripts
 
 ================================================================================
+PROMPT 4 - Expand to 33 Tasks, Improve Scoring (2026-01-09)
+================================================================================
+
+so objective 1 has 11 sub objectives. (a) can we make each sub objective have 3 tasks, so we have 33 tasks for objective-01. also with scoring, tell me what to do. and don't tell me what is currently being checked. if the check pass then show what was checked and that it passed but don't give me hints on what is being checked to make it pass.
+
+---
+RESULT: Completely rewrote both scripts:
+
+prepare.sh:
+- Now creates 33 tasks (3 per sub-objective × 11 sub-objectives)
+- All 11 RHCSA sub-objectives covered:
+  1. Shell commands (brace expansion, command substitution)
+  2. I/O redirection (stderr/stdout separation, pipelines)
+  3. grep/regex (extract usernames, IPs, HTTP errors)
+  4. SSH (Ed25519 keys, config, permissions)
+  5. User switching (su, sudo, file ownership)
+  6. Archive/compression (tar.gz, tar.bz2, exclusions)
+  7. Text files (create, modify, append)
+  8. File operations (copy, move/rename, mkdir)
+  9. Links (hard links, relative symlinks, absolute symlinks)
+  10. Permissions (standard, SETGID, STICKY bit)
+  11. Documentation (man pages research)
+- Creates users: examuser, testuser, admin
+- Creates groups: examgroup, developers, operators
+
+score.sh:
+- Shows "[PASS] Task X.Y: description" only when task passes
+- Shows "[    ] Task X.Y: Not complete" with NO hints when failing
+- No details about what is being checked until it passes
+- 100 points total, 70 to pass
+
+================================================================================
