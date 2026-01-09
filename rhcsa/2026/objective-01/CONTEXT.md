@@ -32,8 +32,7 @@ rhcsa/2026/objective-01/
 ├── 01_shell/       # Sub-obj 1: Shell Commands
 ├── 02_redirection/ # Sub-obj 2: I/O Redirection
 ├── 03_grep/        # Sub-obj 3: grep/Regex
-├── 04_ssh/         # Sub-obj 4: SSH (mostly uses ~/.ssh/)
-├── 05_users/       # Sub-obj 5: Users
+├── 04_ssh/         # Sub-obj 4: SSH (uses ~examuser/.ssh/)
 ├── 06_archive/     # Sub-obj 6: Archive
 ├── 07_textfiles/   # Sub-obj 7: Text Files
 ├── 08_files/       # Sub-obj 8: File Operations
@@ -41,6 +40,10 @@ rhcsa/2026/objective-01/
 ├── 10_permissions/ # Sub-obj 10: Permissions
 ├── 11_docs/        # Sub-obj 11: Documentation
 └── TASKS.txt       # Task descriptions
+
+~examuser/rhcsa-lab/          # Sub-obj 5: Users (examuser needs write access)
+├── shared_workspace/         # examuser:developers, mode 770
+└── reports/                  # examuser:examuser, mode 755
 ```
 
 ## Objective 1: Understand and Use Essential Tools
@@ -110,4 +113,4 @@ sudo ./score.sh      # Check progress
 ```
 
 ---
-*Last updated: 2026-01-09*
+*Last updated: 2026-01-09 (v4 - task clarity, examuser home for sub-obj 5)*

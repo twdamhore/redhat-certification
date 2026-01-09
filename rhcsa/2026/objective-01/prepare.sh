@@ -227,19 +227,21 @@ mkdir -p "$EXAM_DIR/04_ssh"
 # ============================================
 echo -e "${YELLOW}[5/11] Setting up user switching tasks...${NC}"
 
-mkdir -p "$EXAM_DIR/05_users"
-cd "$EXAM_DIR/05_users"
+# These tasks use examuser's home directory since examuser needs write access
+EXAMUSER_HOME="/home/examuser"
+mkdir -p "$EXAMUSER_HOME/rhcsa-lab"
+cd "$EXAMUSER_HOME/rhcsa-lab"
 
-echo "Confidential data" > confidential.txt
-chmod 600 confidential.txt
-chown root:root confidential.txt
+# Clean up any previous attempt
+rm -rf shared_workspace reports examuser_was_here.txt sudo_test.txt 2>/dev/null
 
 mkdir -p shared_workspace
 chmod 770 shared_workspace
-chown root:developers shared_workspace
+chown examuser:developers shared_workspace
 
 mkdir -p reports
 chmod 755 reports
+chown examuser:examuser reports
 
 # ============================================
 # SUB-OBJECTIVE 6: Archive and Compression (5 tasks)
@@ -500,7 +502,7 @@ Set correct SSH permissions: directory 700, private key 600, public key 644, con
 
 ================================================================================
 SUB-OBJECTIVE 5: LOG IN AND SWITCH USERS
-Directory: ~/rhcsa-lab/objective-01/05_users/
+Directory: ~examuser/rhcsa-lab/ (examuser's home)
 ================================================================================
 
 Task 5.1 (2 pts)
@@ -660,11 +662,7 @@ chmod 440 /etc/sudoers.d/examuser
 chown -R "$REAL_USER:$REAL_USER" "$EXAM_DIR"
 chmod -R 755 "$EXAM_DIR"
 
-# Special permissions for specific tasks
-chmod 770 "$EXAM_DIR/05_users/shared_workspace"
-chown root:developers "$EXAM_DIR/05_users/shared_workspace"
-chmod 755 "$EXAM_DIR/05_users/reports"
-chown "$REAL_USER:$REAL_USER" "$EXAM_DIR/05_users/reports"
+# Note: Sub-objective 5 files are in /home/examuser/rhcsa-lab/ (set up earlier)
 
 # Make sure examuser is also REAL_USER for SSH tasks (or use REAL_USER)
 # Update: We'll use REAL_USER for SSH tasks instead of examuser

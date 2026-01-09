@@ -158,3 +158,50 @@ RESULT: Updated both prepare.sh and score.sh:
 5. Updated TASKS.txt paths to use ~/rhcsa-lab/objective-01/
 
 ================================================================================
+PROMPT 8 - Task Description Clarity (2026-01-09)
+================================================================================
+
+Multiple prompts to clarify task descriptions in score.sh:
+
+- "update Task 3.5, it doesn't tell you where the file is"
+- "not so clear with Task 4.1... where to put the file?"
+- "Task 4.2... as examuser? also Task 4.3... as examuser too?"
+- "were are we checking the file? examuser home? Task 5.1..."
+- "same for 5.2 5.3 and 5.4"
+
+---
+RESULT: Updated task descriptions in score.sh to be clearer:
+
+- Task 3.5: Added "From 'users.txt'" to specify input file
+- Task 4.1: Added "As examuser" and "(~/.ssh/id_ed25519)" for location
+- Task 4.2: Added "As examuser"
+- Task 4.3: Added "As examuser" and "~/.ssh/"
+- Tasks 5.1-5.4: Added full paths showing where files should be created
+
+================================================================================
+PROMPT 9 - Move Sub-objective 5 to examuser Home (2026-01-09)
+================================================================================
+
+i feel that examuser won't have permission to write, can we have it in ~examuser
+for all files that examuser needs to create?
+
+---
+RESULT: Moved sub-objective 5 files to /home/examuser/rhcsa-lab/
+
+Changes to prepare.sh:
+- Sub-objective 5 now creates directories in /home/examuser/rhcsa-lab/
+- shared_workspace/ owned by examuser:developers (mode 770)
+- reports/ owned by examuser:examuser (mode 755)
+- Removed old 05_users setup from $EXAM_DIR
+
+Changes to score.sh:
+- Now checks /home/examuser/rhcsa-lab/ for sub-objective 5 tasks
+- Updated all task descriptions to show ~examuser/rhcsa-lab/ paths
+
+Task locations:
+- 5.1: ~examuser/rhcsa-lab/examuser_was_here.txt
+- 5.2: ~examuser/rhcsa-lab/sudo_test.txt
+- 5.3: ~examuser/rhcsa-lab/shared_workspace/team_file.txt
+- 5.4: ~examuser/rhcsa-lab/reports/current_user.txt
+
+================================================================================
